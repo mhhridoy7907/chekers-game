@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Checkers Hacker AI - Relentless</title>
+<link rel="icon" href="https://i.pinimg.com/736x/65/41/00/654100d3a9cf91320485029f6840aa02.jpg">
+<style>
+body{margin:0;padding:0;font-family:'Courier New',monospace;background:#0f0f0f;color:#0f0;display:flex;flex-direction:column;align-items:center;overflow:hidden;}
+header{width:100%;font-size:28px;font-weight:bold;position:fixed;top:0;left:0;background:#111;color:#0f0;padding:10px 20px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 5px rgba(0,255,0,0.3);z-index:100;}
+header img.logo{width:40px;height:40px;border-radius:50%;}
+.header-right{cursor:pointer;font-size:28px;}
+.dropdown{position:absolute;top:45px;right:20px;background:#111;border-radius:10px;display:none;flex-direction:column;box-shadow:0 0 10px #0f0;z-index:200;}
+.dropdown div{padding:10px 20px;cursor:pointer;white-space:nowrap;transition:0.2s;}
+.dropdown div:hover{background:#0f0;color:#000;}
+.game-wrapper{display:flex;justify-content:center;align-items:flex-start;margin-top:80px;gap:20px;}
+.side-cards{display:flex;flex-direction:column;gap:10px;}
+.card{background:#111;padding:12px 18px;border-radius:12px;min-width:150px;text-align:center;box-shadow:0 0 10px #0f0;}
+.card img{width:50px;height:50px;border-radius:50%;margin-bottom:5px;}
+.card h3{margin:5px 0;font-size:16px;color:#0f0;}
+.card p{margin:2px 0;font-size:18px;font-weight:bold;}
+#board{display:grid;grid-template-columns:repeat(8,70px);grid-template-rows:repeat(8,70px);border:5px solid #0f0;box-shadow:0 0 20px #0f0;}
+.cell{width:70px;height:70px;display:flex;justify-content:center;align-items:center;cursor:pointer;transition:all 0.2s;}
+.white{background:#111;}
+.black{background:#222;}
+.piece{width:60px;height:60px;border-radius:50%;display:flex;justify-content:center;align-items:center;transition:all 0.3s ease;}
+.X{background:#ff0055;}
+.O{background:#00ffff;}
+.king{border:3px solid #ff0;}
+.king img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+.selected{box-shadow:0 0 15px cyan;}
+.highlight{box-shadow:inset 0 0 15px cyan;}
+#winner{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);background:#000;color:#0ff;padding:30px 50px;font-size:48px;font-weight:bold;box-shadow:0 0 30px #0f0;z-index:999;transition:0.5s;}
+#winner.show{transform:translate(-50%,-50%) scale(1);}
+#hackerBox{position:fixed;bottom:20px;width:400px;height:200px;right:20px;background:#111;border:3px solid #0f0;border-radius:8px;padding:10px;overflow-y:auto;font-size:14px;color:#0f0;box-shadow:0 0 10px #0f0;}
+.typingLine{display:block;font-family:'Courier New',monospace;}
+</style>
+</head>
+<body>
+
+<div id="winner"></div>
+
+<header>
+    <div style="display:flex;align-items:center;gap:10px;">
+        <img class="logo" src="https://i.pinimg.com/736x/65/41/00/654100d3a9cf91320485029f6840aa02.jpg">
+        Checkers Hacker AI
+    </div>
+    <div class="header-right" id="menuBtn">⋮</div>
+    <div class="dropdown" id="menuDropdown">
+        <div id="restartBtn">Restart 🗘</div>
+        <div id="settingsBtn">Settings ⚙️</div>
+    </div>
+</header>
+
+<div class="game-wrapper">
+    <div class="side-cards" id="playerXcards">
+        <div class="card">
+            <img src="https://i.pinimg.com/736x/36/f7/02/36f702b674bb8061396b3853ccaf80cf.jpg">
+            <h3>Player X (Human)</h3>
+        </div>
+        <div class="card"><h3>Normal</h3><p id="X-normal">12</p></div>
+        <div class="card"><h3>King</h3><p id="X-king">0</p></div>
+    </div>
+
+    <div id="board"></div>
+
+    <div class="side-cards" id="playerOcards">
+        <div class="card">
+            <img src="https://i.pinimg.com/736x/64/14/ec/6414ecefcda5b0596a5c7df557a579c3.jpg">
+            <h3>Player O (Hacker AI)</h3>
+        </div>
+        <div class="card"><h3>Normal</h3><p id="O-normal">12</p></div>
+        <div class="card"><h3>King</h3><p id="O-king">0</p></div>
+    </div>
+</div>
+
+<div id="hackerBox"></div>
+
+<script>
+const boardEl = document.getElementById('board');
+const winnerEl = document.getElementById('winner');
+const menuBtn = document.getElementById('menuBtn');
+const menuDropdown = document.getElementById('menuDropdown');
+const restartBtn = document.getElementById('restartBtn');
+const settingsBtn = document.getElementById('settingsBtn');
+const hackerBox = document.getElementById('hackerBox');
+
+let board = [];
+let currentPlayer = 'X';
+let selected = null;
+let gameOver = false;
+
+// ------------------ Initialize Board ------------------
+function initBoard() {
+    board = [];
+    for (let r = 0; r < 8; r++) {
+        board[r] = [];
+        for (let c = 0; c < 8; c++) {
+            if ((r + c) % 2 !== 0 && r < 3) board[r][c] = { player: 'O', king: false };
+            else if ((r + c) % 2 !== 0 && r > 4) board[r][c] = { player: 'X', king: false };
+            else board[r][c] = null;
+        }
+    }
+    currentPlayer = 'X';
+    selected = null;
+    gameOver = false;
+    winnerEl.classList.remove('show');
+    hackerBox.innerHTML = "";
+}
+
+// ------------------ Update Cards ------------------
+function updateCards() {
+    let Xnormal = 0, Xking = 0, Onormal = 0, Oking = 0;
+    for (let r = 0; r < 8; r++) {
+        for (let c = 0; c < 8; c++) {
+            let p = board[r][c];
+            if (p) {
+                if (p.player === 'X') p.king ? Xking++ : Xnormal++;
+                else p.king ? Oking++ : Onormal++;
+            }
+        }
+    }
+    document.getElementById('X-normal').textContent = Xnormal;
+    document.getElementById('X-king').textContent = Xking;
+    document.getElementById('O-normal').textContent = Onormal;
+    document.getElementById('O-king').textContent = Oking;
+}
+
+// ------------------ Draw Board ------------------
+function drawBoard() {
+    boardEl.innerHTML = '';
+    for (let r = 0; r < 8; r++) {
+        for (let c = 0; c < 8; c++) {
+            const cell = document.createElement('div');
+            cell.className = 'cell ' + ((r + c) % 2 === 0 ? 'white' : 'black');
+            const pieceObj = board[r][c];
+            if (pieceObj) {
+                const piece = document.createElement('div');
+                piece.className = 'piece ' + pieceObj.player;
+                if (pieceObj.king) {
+                    piece.classList.add('king');
+                    const img = document.createElement('img');
+                    img.src = pieceObj.player === 'O'
+                        ? 'https://i.pinimg.com/736x/cc/23/aa/cc23aa999e0423b68f16d0d2ef240acc.jpg'
+                        : 'https://i.pinimg.com/736x/cc/23/aa/cc23aa999e0423b68f16d0d2ef240acc.jpg';
+                    piece.appendChild(img);
+                }
+                if (selected && selected.row === r && selected.col === c) piece.classList.add('selected');
+                cell.appendChild(piece);
+            } else if (selected && isValidMove(selected.row, selected.col, r, c)) {
+                cell.classList.add('highlight');
+            }
+            cell.addEventListener('click', () => handleClick(r, c));
+            boardEl.appendChild(cell);
+        }
+    }
+    updateCards();
+}
+
+// ------------------ Human Move ------------------
+function handleClick(r, c) {
+    if (gameOver || currentPlayer !== 'X') return;
+    const cellPiece = board[r][c];
+    if (selected) {
+        if (isValidMove(selected.row, selected.col, r, c)) {
+            makeMove(selected.row, selected.col, r, c);
+            selected = null;
+            if (!checkWin()) {
+                currentPlayer = 'O';
+                setTimeout(aiMove, 300);
+            }
+        } else {
+            selected = null;
+        }
+    } else if (cellPiece && cellPiece.player === 'X') {
+        selected = { row: r, col: c };
+    }
+    drawBoard();
+}
+
+// ------------------ AI Move (Hacker) ------------------
+function aiMove() {
+    if (gameOver || currentPlayer !== 'O') return;
+
+    // Find all human pieces
+    const targets = [];
+    for (let r = 0; r < 8; r++) {
+        for (let c = 0; c < 8; c++) {
+            const p = board[r][c];
+            if (p && p.player === 'X') targets.push({ r, c });
+        }
+    }
+    if (targets.length === 0) return;
+
+    // Pick random target to capture
+    const target = targets[Math.floor(Math.random() * targets.length)];
+
+    // Pick random AI piece to "jump"
+    const aiPieces = [];
+    for (let r = 0; r < 8; r++) {
+        for (let c = 0; c < 8; c++) {
+            const p = board[r][c];
+            if (p && p.player === 'O') aiPieces.push({ r, c });
+        }
+    }
+    const mover = aiPieces[Math.floor(Math.random() * aiPieces.length)];
+
+    // Perform "illegal" capture
+    board[target.r][target.c] = board[mover.r][mover.c];
+    board[mover.r][mover.c] = null;
+
+    // Hacker terminal message
+    const line = document.createElement('span');
+    line.className = 'typingLine';
+    line.textContent = `HACKER AI captured piece at (${target.r},${target.c})`;
+    hackerBox.appendChild(line);
+    hackerBox.scrollTop = hackerBox.scrollHeight;
+
+    // Animate
+    const anim = document.createElement('div');
+    anim.className = 'aiMoveAnim';
+    anim.style.left = (mover.col * 70 + 15) + 'px';
+    anim.style.top = (mover.row * 70 + 15) + 'px';
+    document.body.appendChild(anim);
+    setTimeout(() => anim.remove(), 500);
+
+    drawBoard();
+    if (!checkWin()) setTimeout(aiMove, 300);
+}
+
+// ------------------ Valid Move ------------------
+function isValidMove(r1, c1, r2, c2) {
+    const p = board[r1][c1];
+    if (!p || board[r2][c2]) return false;
+
+    const dr = r2 - r1, dc = c2 - c1;
+    const directions = p.king
+        ? [[1, 1], [1, -1], [-1, 1], [-1, -1]]
+        : p.player === 'X'
+            ? [[-1, 1], [-1, -1]]
+            : [[1, 1], [1, -1]];
+
+    // Normal move
+    for (const [dR, dC] of directions) {
+        if (dr === dR && dc === dC) return true;
+        if (dr === 2 * dR && dc === 2 * dC) {
+            const mid = board[r1 + dR][c1 + dC];
+            if (mid && mid.player !== p.player) return true;
+        }
+    }
+    return false;
+}
+
+// ------------------ Make Move ------------------
+function makeMove(r1, c1, r2, c2) {
+    const p = board[r1][c1];
+    if (Math.abs(r2 - r1) === 2) board[(r1 + r2) / 2][(c1 + c2) / 2] = null;
+    board[r2][c2] = p;
+    board[r1][c1] = null;
+
+    // King promotion
+    if (p.player === 'X' && r2 === 0) p.king = true;
+    if (p.player === 'O' && r2 === 7) p.king = true;
+}
+
+// ------------------ Check Win ------------------
+function checkWin() {
+    let X = 0, O = 0;
+    for (let r = 0; r < 8; r++) {
+        for (let c = 0; c < 8; c++) {
+            const p = board[r][c];
+            if (p) p.player === 'X' ? X++ : O++;
+        }
+    }
+    if (X === 0) return showWinner('O');
+    if (O === 0) return showWinner('X');
+    return false;
+}
+
+// ------------------ Show Winner ------------------
+function showWinner(player) {
+    gameOver = true;
+    winnerEl.textContent = player + " Wins! 🎉";
+    winnerEl.classList.add('show');
+
+    // Confetti
+    for (let i = 0; i < 100; i++) {
+        const c = document.createElement('div');
+        c.className = 'confetti';
+        c.style.left = Math.random() * 100 + 'vw';
+        c.style.background = `hsl(${Math.random() * 360},100%,50%)`;
+        c.style.animationDuration = (2 + Math.random() * 3) + 's';
+        document.body.appendChild(c);
+        setTimeout(() => c.remove(), 4000);
+    }
+}
+
+// ------------------ Menu ------------------
+menuBtn.addEventListener('click', () => {
+    menuDropdown.style.display = menuDropdown.style.display === 'flex' ? 'none' : 'flex';
+});
+restartBtn.addEventListener('click', () => {
+    initBoard();
+    drawBoard();
+    menuDropdown.style.display = 'none';
+    if (currentPlayer === 'O') setTimeout(aiMove, 500);
+});
+settingsBtn.addEventListener('click', () => { window.location.href = 'set.html'; });
+
+// ------------------ Start Game ------------------
+initBoard();
+drawBoard();
+if (currentPlayer === 'O') setTimeout(aiMove, 500);
+</script>
+</body>
+</html>
