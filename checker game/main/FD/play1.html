@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Checkers Game Full UI</title>
+<link rel="icon" href="https://i.pinimg.com/736x/65/41/00/654100d3a9cf91320485029f6840aa02.jpg">
+
+<style>
+body{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-direction:column;
+    background:#2c3e50;
+    font-family:Arial;
+    color:white;
+    padding:80px 20px 20px;
+    overflow:hidden;
+}
+
+header{
+    font-size:30px;
+    font-weight:bold;
+    position:fixed;
+    top:0;
+    left:0;
+    right:0;
+    text-align:left;
+    padding:12px;
+    background:#2c3e50;
+    color:red;
+    box-shadow:0 2px 5px rgba(0,0,0,0.3);
+    z-index:100;
+    display:flex;
+    justify-content:left;
+    align-items:left;
+    gap:10px;
+}
+
+header img.logo{
+    width:40px;
+    height:40px;
+    border-radius:50%;
+}
+
+.header-right{
+    position:absolute;
+    top:12px;
+    right:20px;
+    cursor:pointer;
+    font-size:28px;
+}
+
+.dropdown{
+    position:absolute;
+    top:45px;
+    right:20px;
+    background:#34495e;
+    border-radius:10px;
+    overflow:hidden;
+    display:none;
+    flex-direction:column;
+    box-shadow:0 0 10px rgba(0,0,0,0.5);
+    z-index:200;
+}
+
+.dropdown div{
+    padding:10px 20px;
+    cursor:pointer;
+    white-space:nowrap;
+    transition:0.2s;
+}
+
+.dropdown div:hover{
+    background:#5c17eb;
+    color:white;
+}
+
+.cards{
+    display:flex;
+    gap:10px;
+    margin:15px;
+}
+
+.card{
+    background:#34495e;
+    padding:12px 18px;
+    border-radius:12px;
+    min-width:150px;
+    height:86px;
+    text-align:center;
+    box-shadow:0 0 10px rgba(0,0,0,0.4);
+}
+
+.card img{
+    width:45px;
+    height:45px;
+    border-radius:50%;
+    margin-bottom:5px;
+}
+
+.card h3{
+    margin:2px;
+    font-size:16px;
+}
+
+.card p{
+    margin:2px;
+    font-size:18px;
+    font-weight:bold;
+}
+
+#board{
+    display:grid;
+    grid-template-columns:repeat(8,70px);
+    grid-template-rows:repeat(8,70px);
+    border:5px solid #333;
+    box-shadow:0 0 20px black;
+}
+
+.cell{
+    width:70px;
+    height:70px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    cursor:pointer;
+}
+
+.white{ background:#eee; }
+.black{ background:#769656; }
+
+.piece{
+    width:60px;
+    height:60px;
+    border-radius:50%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    overflow:hidden;
+}
+
+.X{ background:#5c17eb; }
+.O{ background:black; }
+
+.king{
+    border:3px solid gold;
+}
+
+.king img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    border-radius:50%;
+}
+
+.selected{
+    box-shadow:0 0 10px cyan;
+}
+
+.highlight{
+    box-shadow:inset 0 0 10px cyan;
+}
+
+#winner{
+    position:fixed;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%) scale(0);
+    background: #fff;
+    color:rgb(255, 0, 0);
+    padding:30px 50px;
+    font-size:48px;
+    font-weight:bold;
+    box-shadow:0 0 30px rgb(51, 255, 0);
+    z-index:999;
+    transition:0.5s;
+}
+
+#winner.show{
+    transform:translate(-50%,-50%) scale(1);
+}
+
+.confetti{
+    position:fixed;
+    width:10px;
+    height:10px;
+    top:-10px;
+    animation:fall 3s linear forwards;
+}
+
+@keyframes fall{
+    to{
+        transform:translateY(100vh) rotate(720deg);
+        opacity:0;
+    }
+}
+</style>
+</head>
+<body>
+
+<div id="winner"></div>
+
+<header>
+    <img class="logo" src="https://i.pinimg.com/736x/65/41/00/654100d3a9cf91320485029f6840aa02.jpg" alt="Logo">
+    Checkers Game
+    <div class="header-right" id="menuBtn">⋮</div>
+    <div class="dropdown" id="menuDropdown">
+        <div id="restartBtn">Restart 🗘</div>
+        <div id="settingsBtn">Settings ⚙️</div>
+    </div>
+</header>
+
+<div class="cards">
+    <div class="card">
+        <img src="https://i.pinimg.com/736x/36/f7/02/36f702b674bb8061396b3853ccaf80cf.jpg">
+        <h3>Player O</h3>
+    </div>
+    <div class="card">
+        <h3>Normal</h3>
+        <p id="O-normal">12</p>
+    </div>
+    <div class="card">
+        <h3>King</h3>
+        <p id="O-king">0</p>
+    </div>
+</div>
+
+<div id="board"></div>
+
+<div class="cards">
+    <div class="card">
+        <img src="https://i.pinimg.com/736x/36/f7/02/36f702b674bb8061396b3853ccaf80cf.jpg">
+        <h3>Player X</h3>
+    </div>
+    <div class="card">
+        <h3>Normal</h3>
+        <p id="X-normal">12</p>
+    </div>
+    <div class="card">
+        <h3>King</h3>
+        <p id="X-king">0</p>
+    </div>
+</div>
+
+<script>
+const boardEl=document.getElementById('board');
+const winnerEl=document.getElementById('winner');
+const menuBtn=document.getElementById('menuBtn');
+const menuDropdown=document.getElementById('menuDropdown');
+const restartBtn=document.getElementById('restartBtn');
+const settingsBtn=document.getElementById('settingsBtn');
+
+let board=[];
+let currentPlayer='X';
+let selected=null;
+let mustContinueCapture=false;
+let gameOver=false;
+
+function initBoard(){
+    board=[];
+    for(let r=0;r<8;r++){
+        board[r]=[];
+        for(let c=0;c<8;c++){
+            if((r+c)%2!==0 && r<3) board[r][c]={player:'O',king:false};
+            else if((r+c)%2!==0 && r>4) board[r][c]={player:'X',king:false};
+            else board[r][c]=null;
+        }
+    }
+    currentPlayer='X';
+    selected=null;
+    mustContinueCapture=false;
+    gameOver=false;
+    winnerEl.classList.remove('show');
+}
+
+function updateCards(){
+    let Xnormal=0,Xking=0,Onormal=0,Oking=0;
+
+    for(let r=0;r<8;r++){
+        for(let c=0;c<8;c++){
+            let p=board[r][c];
+            if(p){
+                if(p.player==='X'){
+                    p.king?Xking++:Xnormal++;
+                }else{
+                    p.king?Oking++:Onormal++;
+                }
+            }
+        }
+    }
+
+    document.getElementById('X-normal').textContent=Xnormal;
+    document.getElementById('X-king').textContent=Xking;
+    document.getElementById('O-normal').textContent=Onormal;
+    document.getElementById('O-king').textContent=Oking;
+}
+
+function drawBoard(){
+    boardEl.innerHTML='';
+
+    for(let r=0;r<8;r++){
+        for(let c=0;c<8;c++){
+            const cell=document.createElement('div');
+            cell.className='cell '+((r+c)%2===0?'white':'black');
+
+            const pieceObj=board[r][c];
+
+            if(pieceObj){
+                const piece=document.createElement('div');
+                piece.className='piece '+pieceObj.player;
+
+                if(pieceObj.king){
+                    piece.classList.add('king');
+                    const img=document.createElement('img');
+
+                    img.src = pieceObj.player==='O'
+                        ? 'https://i.pinimg.com/736x/65/41/00/654100d3a9cf91320485029f6840aa02.jpg'
+                        : 'https://i.pinimg.com/736x/69/fd/03/69fd03bc1a065d2a18a31933fc9c53a8.jpg';
+
+                    piece.appendChild(img);
+                }
+
+                if(selected && selected.row===r && selected.col===c){
+                    piece.classList.add('selected');
+                }
+
+                cell.appendChild(piece);
+
+            }else if(selected && isValidMove(selected.row,selected.col,r,c)){
+                cell.classList.add('highlight');
+            }
+
+            cell.addEventListener('click',()=>handleClick(r,c));
+            boardEl.appendChild(cell);
+        }
+    }
+
+    updateCards();
+}
+
+function handleClick(r,c){
+    if(gameOver) return;
+
+    const cellPiece=board[r][c];
+
+    if(selected){
+        if(isValidMove(selected.row,selected.col,r,c)){
+            const captured=makeMove(selected.row,selected.col,r,c);
+
+            if(captured && hasCapture(r,c,board[r][c].king)){
+                selected={row:r,col:c};
+                mustContinueCapture=true;
+            }else{
+                selected=null;
+                mustContinueCapture=false;
+                if(!checkWin()) currentPlayer=currentPlayer==='X'?'O':'X';
+            }
+        }else{
+            selected=null;
+        }
+    }else if(cellPiece && cellPiece.player===currentPlayer){
+        selected={row:r,col:c};
+    }
+
+    drawBoard();
+}
+
+function isValidMove(fr,fc,tr,tc){
+    const piece=board[fr][fc];
+    if(!piece || board[tr][tc]) return false;
+
+    const dr=tr-fr;
+    const dc=tc-fc;
+
+    let directions = piece.king
+        ? [[1,1],[1,-1],[-1,1],[-1,-1]]
+        : piece.player==='X'
+        ? [[-1,1],[-1,-1]]
+        : [[1,1],[1,-1]];
+
+    for(const [dR,dC] of directions){
+        if(dr===dR && dc===dC && !mustContinueCapture) return true;
+        if(dr===2*dR && dc===2*dC){
+            const mid=board[fr+dR][fc+dC];
+            if(mid && mid.player!==piece.player) return true;
+        }
+    }
+
+    return false;
+}
+
+function makeMove(fr,fc,tr,tc){
+    const piece=board[fr][fc];
+    let captured=false;
+
+    if(Math.abs(tr-fr)===2){
+        board[(fr+tr)/2][(fc+tc)/2]=null;
+        captured=true;
+    }
+
+    board[tr][tc]=piece;
+    board[fr][fc]=null;
+
+    if(piece.player==='X' && tr===0) piece.king=true;
+    if(piece.player==='O' && tr===7) piece.king=true;
+
+    return captured;
+}
+
+function hasCapture(r,c,isKing){
+    const piece=board[r][c];
+    const directions=isKing?[[2,2],[2,-2],[-2,2],[-2,-2]]
+        : piece.player==='X'?[[-2,2],[-2,-2]]:[[2,2],[2,-2]];
+
+    for(const [dR,dC] of directions){
+        const tr=r+dR, tc=c+dC;
+        if(tr<0||tr>7||tc<0||tc>7) continue;
+
+        const mid=board[r+dR/2][c+dC/2];
+        if(board[tr][tc]===null && mid && mid.player!==piece.player) return true;
+    }
+    return false;
+}
+
+function showWinner(player){
+    gameOver=true;
+    winnerEl.textContent=player+" Wins! 🎉";
+    winnerEl.classList.add('show');
+
+    for(let i=0;i<100;i++){
+        const c=document.createElement('div');
+        c.className='confetti';
+        c.style.left=Math.random()*100+'vw';
+        c.style.background=`hsl(${Math.random()*360},100%,50%)`;
+        c.style.animationDuration=(2+Math.random()*3)+'s';
+        document.body.appendChild(c);
+        setTimeout(()=>c.remove(),4000);
+    }
+}
+
+function checkWin(){
+    let X=0,O=0;
+
+    for(let row of board){
+        for(let p of row){
+            if(p) p.player==='X'?X++:O++;
+        }
+    }
+
+    if(X===0){ showWinner("O"); return true; }
+    if(O===0){ showWinner("X"); return true; }
+
+    return false;
+}
+
+// Menu Button Logic
+menuBtn.addEventListener('click',()=>{
+    menuDropdown.style.display = menuDropdown.style.display==='flex'?'none':'flex';
+});
+
+restartBtn.addEventListener('click',()=>{
+    initBoard();
+    drawBoard();
+    menuDropdown.style.display='none';
+});
+
+settingsBtn.addEventListener('click',()=>{
+    window.location.href='set.html';
+});
+
+// Initialize
+initBoard();
+drawBoard();
+</script>
+
+</body>
+</html>
