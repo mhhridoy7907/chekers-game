@@ -81,7 +81,6 @@ header .buttons button:hover {
     box-shadow: 0 0 10px #8233ff;
 }
 
-/* Main content wrapper */
 .main-content {
     flex: 1;
     display: flex;
@@ -105,7 +104,6 @@ header .buttons button:hover {
     100% { opacity: 1; transform: translateY(0); }
 }
 
-/* Loop animation effect */
 @keyframes neonPulse {
     0%, 100% { text-shadow: 0 0 5px #00f600, 0 0 10px #00f600, 0 0 20px #00f600; }
     50% { text-shadow: 0 0 20px #00f600, 0 0 30px #00f600, 0 0 40px #00f600; }
@@ -114,7 +112,7 @@ header .buttons button:hover {
 .main-content span:nth-child(2) { animation: textSlideUp 1s ease forwards 1.5s, neonPulse 2s infinite; }
 .main-content span:nth-child(3) { animation: textSlideUp 1s ease forwards 2.5s, neonPulse 2s infinite; }
 
-/* Play buttons below text */
+
 .play-buttons {
     display: flex;
     gap: 30px;
@@ -142,9 +140,10 @@ header .buttons button:hover {
 <body>
 
 <header>
+
     <div class="logo-name">
-        <img src="https://i.pinimg.com/736x/ee/e6/aa/eee6aa674369cea76d979bdf323e985f.jpg" alt="Logo">
-        <span>MH HRIDOY</span>
+       <img id="playerProfile" src="https://i.pinimg.com/736x/36/f7/02/36f702b674bb8061396b3853ccaf80cf.jpg">
+            <h3 id="playerNameShow">Player X</h3>
     </div>
     <div class="buttons">
         <button onclick="location.href='set.html'">Settings ⚙️</button>
@@ -163,7 +162,7 @@ header .buttons button:hover {
     </div>
 </div>
 
-<script src="funtion/hm.js"> </script>
+        <script sr="funtion/hm.js"></script>
 
 </body>
 </html>
