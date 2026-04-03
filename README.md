@@ -32,11 +32,8 @@ A simple checkers game built using HTML, CSS, and JavaScript.
 
 ![preview](imm/9.jpg)
 
-## Project Files 📂
-
-
-```
-```
+## Files structure 📂
+![preview](imm/cheq.jpg)
 
 
 ## Technologies Used 🛠️
