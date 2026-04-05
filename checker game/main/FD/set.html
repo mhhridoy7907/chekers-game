@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Settings</title>
+<link rel="icon" href="https://i.pinimg.com/736x/65/41/00/654100d3a9cf91320485029f6840aa02.jpg">
+    <link rel="stylesheet" herf="style/st.css">
+    
+</head>
+<body>
+
+<div class="settings-box">
+
+<h1>⚙ Settings</h1>
+
+<div class="setting-item">
+<label>👤 Profile</label>
+<div class="profile">
+    <img id="profilePic" src="https://i.pravatar.cc/100">
+    <input type="text" id="playerName" placeholder="Enter name">
+</div>
+<input type="file" id="uploadImg" accept="image/*">
+</div>
+
+<div class="setting-item">
+<label>🎵 Music ON / OFF</label>
+<div class="toggle" id="musicToggle">
+    <div class="toggle-circle"></div>
+</div>
+</div>
+
+<div class="setting-item">
+<label>🔊 Volume</label>
+<input type="range" min="0" max="100" id="volumeSlider">
+</div>
+
+<button onclick="goBack()">⬅ Back</button>
+
+</div>
+
+<script src="fu/sat.js"> </script>
+</body>
+</html>
