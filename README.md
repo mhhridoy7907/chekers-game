@@ -126,3 +126,48 @@ Promote to king if reached end row
 
 Switch turn
 ---
+
+
+
+
+<p align="center">
+<img src="https://readme-typing-svg.herokuapp.com?font=Orbitron&size=22&duration=3000&color=00F6FF&center=true&vCenter=true&width=520&lines=🌐+Connect+With+Me+🌐"/>
+</p>
+
+<p align="center">
+<a href="https://bsky.app/profile/mhhridoy7907.bsky.social">
+<img src="https://cdn.simpleicons.org/bluesky" height="48"/>
+</a>
+<a href="https://wa.me/8801962388570">
+<img src="https://cdn.simpleicons.org/whatsapp" height="48"/>
+</a>
+<a href="https://www.facebook.com/mh.hridoy.567130">
+<img src="https://cdn.simpleicons.org/facebook" height="48"/>
+</a>
+<a href="https://pinterest.com/mhhridoy7907">
+<img src="https://cdn.simpleicons.org/pinterest" height="48"/>
+</a>
+<a href="https://tiktok.com/@mh2hridoy__">
+<img src="https://cdn.simpleicons.org/tiktok" height="48"/>
+</a>
+<a href="https://twitch.tv/mhhridoy7907">
+<img src="https://cdn.simpleicons.org/twitch" height="48"/>
+</a>
+<a href="https://x.com/mhhridoy7907">
+<img src="https://cdn.simpleicons.org/x" height="48"/>
+</a>
+<a href="https://www.youtube.com/@mh2_hridoy">
+<img src="https://cdn.simpleicons.org/youtube" height="48"/>
+</a>
+<a href="mailto:mhhridoy7907@gmail.com">
+<img src="https://cdn.simpleicons.org/gmail" height="48"/>
+</a>
+</p>
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/74038190/216649452-6e7b3d0a-5c2a-4b9a-9f37-0c64f7a3b5f0.gif" width="170"/>
+</p>
+
+<p align="center">
+WhatsApp Number:  +880 1962-388570
+</p>
